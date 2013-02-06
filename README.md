@@ -1,4 +1,4 @@
 GPGPU
 =====
 
-CUDA and OpenCL projects as GPGPU
+CUDA and OpenCL projects
