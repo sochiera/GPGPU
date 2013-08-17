@@ -1,16 +1,10 @@
-/* Simple Hello World for OpenCL, written in C.
- * For real code, check for errors. The error code is stored in all calls here,
- * but no checking is done, which is certainly bad. It'll likely simply crash
- * right after a failing call.
- *
- * On GNU/Linux with nVidia OpenCL, program builds with -lOpenCL.
- * Not sure about other platforms.
- */
-
-#include <stdio.h>
-#include <string.h>
+#include <iostream>
+#include <string>
+#include <cstdlib>
 
 #include <CL/cl.h>
+
+using namespace std;
 
 const char rot13_cl[] = "				\
 __kernel void rot13					\
@@ -33,10 +27,10 @@ __kernel void rot13					\
 }							\
 ";
 
-void rot13 (char *buf)
+void rot13 (string buf)
 {
-    int index=0;
-    char c=buf[index];
+    int index = 0;
+    char c = buf[index];
     while (c!=0) {
         if (c<'A' || c>'z' || (c>'Z' && c<'a')) {
             buf[index] = buf[index];
@@ -47,13 +41,13 @@ void rot13 (char *buf)
 	        buf[index] = buf[index]+13;
 	    }
         }
-	c=buf[++index];
+	c = buf[++index];
     }
 }
 
 int main() {
 	char buf[]="Hello, World!";
-	size_t srcsize, worksize=strlen(buf);
+	size_t srcsize, worksize=char_traits<char>::length(buf);
 	
 	cl_int error;
 	cl_platform_id platform;
@@ -71,7 +65,7 @@ int main() {
 	cl_command_queue cq = clCreateCommandQueue(context, device, 0, &error);
 	
 	rot13(buf);	// scramble using the CPU
-	puts(buf);	// Just to demonstrate the plaintext is destroyed
+	cout << buf << endl;;	// Just to demonstrate the plaintext is destroyed
 
 	//char src[8192];
 	//FILE *fil=fopen("rot13.cl","r");
@@ -79,7 +73,7 @@ int main() {
 	//fclose(fil);
 	
 	const char *src=rot13_cl;
-	srcsize=strlen(rot13_cl);
+	srcsize=char_traits<char>::length(rot13_cl);
 
 	const char *srcptr[]={src};
 	// Submit the source code of the rot13 kernel to OpenCL
@@ -113,5 +107,5 @@ int main() {
 	error=clFinish(cq);
 	
 	// Finally, output out happy message.
-	puts(buf2);
+	cout << buf2 << endl;
 }
